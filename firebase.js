@@ -2,6 +2,7 @@ require('dotenv').config();
 const {initializeApp, applicationDefault} = require("firebase-admin/app");
 const {getFirestore}=require('firebase-admin/firestore')
 const {initializeApp: initializeAppClient}= require('firebase/app')
+const { getAuth, signInWithEmailAndPassword,signOut }=require("firebase/auth");
 const {
 getStorage,
   collection,
@@ -29,7 +30,7 @@ const firebaseConfig = {
 const appClient=initializeAppClient(firebaseConfig)
 const db=getFirestore()
 const st = getStorage(appClient);
-
+const auth=getAuth(appClient);
 module.exports = {
     db,
     st,
@@ -37,5 +38,6 @@ module.exports = {
     getDocs,
     addDoc,
     getDownloadURL,uploadBytes,
-    ref,uploadBytesResumable
+    ref,uploadBytesResumable,
+    auth,signInWithEmailAndPassword,signOut
 }

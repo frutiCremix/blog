@@ -10,6 +10,7 @@ const {
   ref,
   uploadBytesResumable,
 } = require("../../firebase.js");
+
 // Importa uploadBytes y ref
 const { v4 } = require("uuid");
 const axios = require("axios");
@@ -32,6 +33,7 @@ exports.upload = upload.fields([
   { name: "imagen", maxCount: 1 },
 ]);
 ////fin de configuracion multer//////////////
+
 exports.uploadFile = async (req, res) => {
   const titulo = req.body.titulo;
   const desc = req.body.desc;
@@ -55,6 +57,7 @@ exports.uploadFile = async (req, res) => {
       //console.log("archivo cargado correctamente", urlImg);
 
       guardarUrlYDatos(titulo, desc, urlFile, urlImg, res);
+
       res.status(200).json({ message: "Archivo cargado correctamente" });
     } catch (error) {
       console.error("error al cargar el archivo: ", error);
@@ -80,6 +83,6 @@ async function guardarUrlYDatos(titulo, desc, urlFile, urlImg, res) {
     urlImg: urlImg,
     fecha: `${dia}/${mes}/${anio}`,
   });
-
+  //hacer el logout automatico
   //console.log("Datos almacenados correctamente");
 }
