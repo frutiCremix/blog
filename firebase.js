@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const {initializeApp, applicationDefault} = require("firebase-admin/app");
 const {getFirestore}=require('firebase-admin/firestore')
 const {initializeApp: initializeAppClient}= require('firebase/app')
@@ -16,7 +17,7 @@ getStorage,
 const app=initializeApp({
     credential:applicationDefault()
 })
-
+process.env.GOOGLE_APPLICATION_CREDENTIALS;
 //config para la api de cliente
 const firebaseConfig = {
     apiKey: process.env.APIKEY,
