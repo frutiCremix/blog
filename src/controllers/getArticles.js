@@ -3,7 +3,7 @@ const {db,st}=require('../../firebase.js')
 const axios = require('axios');
 async function getArticles(req,res){
   
-        const querySnapshot=await db.collection('posts').get()
+        const querySnapshot=await db.collection('posts').orderBy('fecha','desc').get()
         const datos=querySnapshot.docs.map(e=>({
             id:e.id,
             ...e.data()
