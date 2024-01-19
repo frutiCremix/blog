@@ -18,14 +18,26 @@ const axios = require("axios");
 const storage2 = multer.memoryStorage();
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "archivos");
+    let uploadFolder;
+
+    // Determinar la carpeta de destino según el tipo de archivo
+    if (file.fieldname === "imagen") {
+      uploadFolder = "imagenes";
+    } else if (file.fieldname === "archivoMD") {
+      uploadFolder = "markdown";
+    } else {
+      // Otros tipos de archivos pueden ir a una carpeta predeterminada
+      uploadFolder = "archivos";
+    }
+
+    cb(null, uploadFolder);
   },
   filename: function (req, file, cb) {
-    //console.log(file);
+    // Mantén el nombre original del archivo
     cb(null, file.originalname);
   },
 });
-const upload = multer({ storage: storage2 });
+const upload = multer({ storage: storage2});
 exports.upload = upload.fields([
   { name: "titulo", maxCount: 1 },
   { name: "desc", maxCount: 1 },
@@ -39,15 +51,16 @@ exports.uploadFile = async (req, res) => {
   const desc = req.body.desc;
   const archivoMD = req.files["archivoMD"][0];
   const imagen = req.files["imagen"][0];
-
+  
   if (archivoMD != undefined || imagen != undefined) {
-    //console.log({ titulo, desc, archivoMD, imagen });
-    const storageRef = ref(st, v4());
-    const storageRefImg = ref(st, v4());
+    
+    const storageRef = ref(st, `markdown/${v4()}`);
+    const storageRefImg = ref(st, `imagenes/${v4()}`);
 
     try {
       const snapshot = await uploadBytes(storageRef, archivoMD.buffer);
       const fileRef = snapshot.ref;
+
       const urlFile = await getDownloadURL(fileRef);
       //console.log("archivo cargado correctamente", urlFile);
 
