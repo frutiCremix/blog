@@ -14,7 +14,7 @@ const {
 // Importa uploadBytes y ref
 const { v4 } = require("uuid");
 const axios = require("axios");
-
+//midleware de la ruta /carga 
 const storage2 = multer.memoryStorage();
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -39,8 +39,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage2});
 exports.upload = upload.fields([
-  { name: "titulo", maxCount: 1 },
-  { name: "desc", maxCount: 1 },
   { name: "archivoMD", maxCount: 1 },
   { name: "imagen", maxCount: 1 },
 ]);
@@ -49,13 +47,15 @@ exports.upload = upload.fields([
 exports.uploadFile = async (req, res) => {
   const titulo = req.body.titulo;
   const desc = req.body.desc;
+  const categoria=req.body.categoria;
   const archivoMD = req.files["archivoMD"][0];
   const imagen = req.files["imagen"][0];
+  const tituloSinEspacios = titulo.replace(/\s+/g, "_");
   
   if (archivoMD != undefined || imagen != undefined) {
     
-    const storageRef = ref(st, `markdown/${v4()}`);
-    const storageRefImg = ref(st, `imagenes/${v4()}`);
+    const storageRef = ref(st, `markdown/${v4()}_${tituloSinEspacios}`);
+    const storageRefImg = ref(st, `imagenes/${v4()}_${tituloSinEspacios}`);
 
     try {
       const snapshot = await uploadBytes(storageRef, archivoMD.buffer);
@@ -69,7 +69,7 @@ exports.uploadFile = async (req, res) => {
       const urlImg = await getDownloadURL(imgRef);
       //console.log("archivo cargado correctamente", urlImg);
 
-      guardarUrlYDatos(titulo, desc, urlFile, urlImg, res);
+      guardarUrlYDatos(titulo, desc, categoria, urlFile, urlImg, res);
 
       res.status(200).json({ message: "Archivo cargado correctamente" });
     } catch (error) {
@@ -81,7 +81,7 @@ exports.uploadFile = async (req, res) => {
   }
 };
 
-async function guardarUrlYDatos(titulo, desc, urlFile, urlImg, res) {
+async function guardarUrlYDatos(titulo, desc,categoria, urlFile, urlImg, res) {
   //console.log("Guardando URL:", urlFile, "con título:", titulo);
 
   const fecha = new Date();
@@ -89,9 +89,12 @@ async function guardarUrlYDatos(titulo, desc, urlFile, urlImg, res) {
   const mes = fecha.getMonth() + 1;
   const anio = fecha.getFullYear();
 
+ categoria= categoria.toLowerCase();
+
   await db.collection("posts").add({
     titulo,
     desc,
+    categoria,
     url: urlFile,
     urlImg: urlImg,
     fecha: `${dia}/${mes}/${anio}`,
