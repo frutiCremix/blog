@@ -14,7 +14,7 @@ async function getArticle(req,res){
     const {id}= req.params;
     //id=Rw1g0cv3f4RV1lH9Tas3
     const idFormateado=id.split('=')[1];
-    const docRef= db.collection('posts').doc(`${idFormateado}`);
+    const docRef= db.collection('posts').doc(`${id}`);
     const doc=await docRef.get();
     if(!doc.exists){
         res.status(404)
@@ -24,7 +24,6 @@ async function getArticle(req,res){
 }
 async function getMarkDown(req, res) {
     const { url } = req.body;
-    
     try {
       const response = await axios.get(url);
       if (response.status === 200) {
